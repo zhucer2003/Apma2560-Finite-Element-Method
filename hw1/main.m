@@ -39,6 +39,8 @@ end
 
 %% Plot graph and summarize errors
 plot(x,u)
+savefig('result/solution.fig')
 for i=2:numtrial
     rate(i-1)=log(error(i-1)/error(i))/log(2); %rate for l2
 end
+save('data/error_rate.fig','error','nodeerror','rate')
