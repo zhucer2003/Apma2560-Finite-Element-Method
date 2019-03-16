@@ -3,7 +3,7 @@ clear
 clc
 
 %% start solving PDEs!!
-ll=0;rr=1;numtrial=4;
+ll=0;rr=1;numtrial=2;
 error=zeros(numtrial,1);
 nodeerror=zeros(numtrial,1);
 
@@ -11,15 +11,18 @@ for i=1:numtrial
     M=10*2^i-1;
     u=zeros(M+2,1);
     u(1)=0;u(M+2)=0;
+    u2=u;
     h=(rr-ll)/(M+1);
     A=full(gallery('tridiag',M,-1,2,-1))/h;
-    b=zeros(M,1);
+    b=zeros(M,1);b2=b;
     x=linspace(ll,rr,M+2);
     for j=1:M
         b(j)=calrhs(x(j),x(j+1),x(j+2),h,1); %Calculate by hand
-        %b(j)=calrhs(x(j),x(j+1),x(j+2),h,2); %Use Simpson's rule
+        b2(j)=calrhs(x(j),x(j+1),x(j+2),h,2); %Use Simpson's rule
     end
     u(2:M+1)=A\b;
+    u2(2:M+1)=A\b2;
+    
     numeval=200000;
     testx=linspace(0,1,numeval);
     l2=0;
@@ -38,7 +41,8 @@ for i=1:numtrial
 end
 
 %% Plot graph and summarize errors
-plot(x,u)
+plot(x,u,x,u2,x,exactu)
+legend('Exact Solution','Exact Integral Evaluation','Simpson''s Rule')
 savefig('result/solution.fig')
 for i=2:numtrial
     rate(i-1)=log(error(i-1)/error(i))/log(2); %rate for l2
