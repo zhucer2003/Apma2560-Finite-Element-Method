@@ -3,7 +3,7 @@ clear
 clc
 
 %% start solving PDEs!!
-ll=0;rr=1;numtrial=2;
+ll=0;rr=1;numtrial=4;
 error=zeros(numtrial,1);
 nodeerror=zeros(numtrial,1);
 
@@ -17,7 +17,7 @@ for i=1:numtrial
     b=zeros(M,1);b2=b;
     x=linspace(ll,rr,M+2);
     for j=1:M
-        b(j)=calrhs(x(j),x(j+1),x(j+2),h,1); %Calculate by hand
+        b(j)=calrhs(x(j),x(j+1),x(j+2),h,2); %Calculate by hand
         b2(j)=calrhs(x(j),x(j+1),x(j+2),h,2); %Use Simpson's rule
     end
     u(2:M+1)=A\b;
