@@ -3,7 +3,7 @@ clear
 clc
 
 %% start solving PDEs!!
-ll=0;rr=1;numtrial=4;
+ll=0;rr=1;numtrial=8;
 error=zeros(numtrial,1);
 nodeerror=zeros(numtrial,1);
 
