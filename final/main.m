@@ -12,15 +12,15 @@ for i=1:numtrial
     M=10*2^(i-1)-1;
     u=zeros(2*M+2,1);
     h=(rr-ll)/(M+1);
-    A11=8/h;
+    A11=8*h;
     A12=0;
-    A22=24/h^3;
-    B11=2/h;
-    B12=-6/h^2;
-    B21=6/h^2;
-    B22=-12/h^3;
-    C11=4/h;
-    D11=4/h+gamma;
+    A22=24/h;
+    B11=2*h;
+    B12=-6;
+    B21=6;
+    B22=-12/h;
+    C11=4*h;
+    D11=4*h+gamma*h^2;
     A=zeros(2*M+2);
     A(1,1)=C11;A(1,2)=B11;A(1,3)=B12;
     A(2,1)=B11;A(2,2)=A11;A(2,3)=A12;A(2,4)=B11;A(2,5)=B12;
@@ -37,13 +37,17 @@ for i=1:numtrial
     end
     b=zeros(2*M+2,1);
     x=linspace(ll,rr,M+2);
-    b(1)=(h^2-4*h+6-2*(h+3)*exp(-h))/h^2;
-    b(2*M+2)=-exp(-1)*(h^2+4*h+6+2*(h-3)*exp(h))/h^2;
+    b1=@(x) basis1(x,0,h).*exp(-x);
+    b(1)=integral(b1,0,h);
+    b2=@(x) basis1(x,(M+1)*h,h).*exp(-x);
+    b(2*M+2)=integral(b2,M*h,(M+1)*h);
     for j=2:2*M+1
         if mod(j,2)==0
-            b(j)=exp(-j/2*h)*(-8*h-2*exp(h)*(h-3)-2*exp(-h)*(h+3))/h^2;
+            b3=@(x) basis1(x,j/2*h,h).*exp(-x);
+            b(j)=integral(b3,j/2*h-h,j/2*h)+integral(b3,j/2*h,j/2*h+h);
         else
-            b(j)=exp(-(j-1)/2*h)*(24+6*exp(h)*(h-2)-6*exp(-h)*(h+2))/h^3;
+            b4=@(x) basis2(x,(j-1)/2*h,h).*exp(-x);
+            b(j)=integral(b4,(j-1)/2*h-h,(j-1)/2*h)+integral(b4,(j-1)/2*h,(j-1)/2*h+h);
         end
     end
     u=A\b;
@@ -63,6 +67,7 @@ for i=1:numtrial
         else
             uu=u(2*j-2)*basis1(testx(p),(j-1)*h,h)+u(2*j-1)*basis2(testx(p),(j-1)*h,h)+u(2*j)*basis1(testx(p),j*h,h)+u(2*j+1)*basis2(testx(p),j*h,h);
         end
+        uu=uu/h^2;
         l2=l2+(uexact(testx(p))-uu)^2;
     end
     l2=sqrt(l2/numeval);
